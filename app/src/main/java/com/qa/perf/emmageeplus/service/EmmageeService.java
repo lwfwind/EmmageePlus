@@ -35,6 +35,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qa.perf.emmageeplus.MyApplication;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.activity.MainPageActivity;
 import com.qa.perf.emmageeplus.bean.Process;
@@ -232,7 +233,6 @@ public class EmmageeService extends Service {
     /**
      * read configuration file.
      *
-     * @throws IOException
      */
     private void readSettingInfo() {
         SharedPreferences preferences = Settings
@@ -338,17 +338,13 @@ public class EmmageeService extends Service {
      * create a floating window to show real-time data.
      */
     private void createFloatingWindow() {
-        SharedPreferences shared = getSharedPreferences("float_flag",
-                Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = shared.edit();
-        editor.putInt("float", 1);
-        editor.commit();
+        getSharedPreferences("float_flag",Activity.MODE_PRIVATE).edit().putInt("float", 1).apply();
         windowManager = (WindowManager) getApplicationContext()
-                .getSystemService("window");
+                .getSystemService(Context.WINDOW_SERVICE);
         wmParams = ((MyApplication) getApplication()).getMywmParams();
-        wmParams.type = 2002;
+        wmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
         wmParams.flags |= 8;
-        wmParams.gravity = Gravity.LEFT | Gravity.TOP;
+        wmParams.gravity = Gravity.START | Gravity.TOP;
         wmParams.x = 0;
         wmParams.y = 0;
         wmParams.width = WindowManager.LayoutParams.WRAP_CONTENT;

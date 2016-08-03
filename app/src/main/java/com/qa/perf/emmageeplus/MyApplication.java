@@ -14,10 +14,12 @@
  *  limitations under the License.
  *
  */
-package com.qa.perf.emmageeplus.utils;
+package com.qa.perf.emmageeplus;
 
 import android.app.Application;
 import android.view.WindowManager;
+
+import com.qa.perf.emmageeplus.exception.CrashHandler;
 
 /**
  * my application class
@@ -27,6 +29,13 @@ import android.view.WindowManager;
 public class MyApplication extends Application {
 
     private WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        crashHandler.init(this);
+    }
 
     /**
      * Gets mywm params.
