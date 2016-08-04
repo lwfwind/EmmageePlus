@@ -16,7 +16,7 @@
     <string name="floating_window">Show Floating Window</string>
     <string name="save">Save</string>
 
-    <string name="calculating">Calculating...</string>
+    <string name="calculating">Calculating…</string>
     <string name="open_wifi">WIFI Off</string>
     <string name="close_wifi">WIFI On</string>
     <string name="process_free_mem">App/Available Memory:</string>
@@ -39,7 +39,7 @@
     <string name="traffic">Net Traffic(KB)</string>
     <string name="battery">Battery(%)</string>
     <string name="current">Current(mA)</string>
-    <string name="temperature">Temperature(C)</string>
+    <string name="temperature">Temperature©</string>
     <string name="voltage">Voltage(V)</string>
     <string name="fps">FPS</string>
     <string name="stat_error">Stat Error</string>

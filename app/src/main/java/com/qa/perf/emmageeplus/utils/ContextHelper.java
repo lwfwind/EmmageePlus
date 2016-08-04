@@ -180,7 +180,7 @@ public class ContextHelper {
      */
     private List<ApplicationInfo> getPackagesInfo(Context context) {
         PackageManager pm = context.getApplicationContext().getPackageManager();
-        return pm.getInstalledApplications(PackageManager.GET_UNINSTALLED_PACKAGES);
+        return pm.getInstalledApplications(PackageManager.GET_META_DATA);
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.qa.perf.emmageeplus.utils;
+package com.qa.perf.emmageeplus.email;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -22,7 +22,7 @@ public class EncryptData {
      *
      * @throws Exception the exception
      */
-    public EncryptData() throws Exception {
+    public EncryptData() {
         this(strDefaultKey);
     }
 
@@ -32,10 +32,9 @@ public class EncryptData {
      * @param strKey 指定的密钥
      * @throws Exception
      */
-    public EncryptData(String strKey) {
+    public EncryptData(String strKey){
         try {
             Key key = getKey(strKey.getBytes());
-
             encryptCipher = Cipher.getInstance("DES");
             encryptCipher.init(Cipher.ENCRYPT_MODE, key);
 

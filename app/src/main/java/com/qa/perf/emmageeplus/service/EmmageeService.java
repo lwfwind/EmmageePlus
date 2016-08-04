@@ -39,10 +39,13 @@ import com.qa.perf.emmageeplus.MyApplication;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.activity.MainPageActivity;
 import com.qa.perf.emmageeplus.bean.Process;
+import com.qa.perf.emmageeplus.email.EncryptData;
+import com.qa.perf.emmageeplus.email.MailSender;
 import com.qa.perf.emmageeplus.performance.CpuInfo;
 import com.qa.perf.emmageeplus.performance.BatteryInfo;
 import com.qa.perf.emmageeplus.performance.FpsInfo;
 import com.qa.perf.emmageeplus.performance.MemoryInfo;
+import com.qa.perf.emmageeplus.receiver.BatteryInfoBroadcastReceiver;
 import com.qa.perf.emmageeplus.utils.*;
 
 import java.io.*;
@@ -71,6 +74,7 @@ public class EmmageeService extends Service {
     private static final int MAX_START_TIME_COUNT = 5;
     private static final String START_TIME = "#startTime";
     private static final String BATTERY_CHANGED = "android.intent.action.BATTERY_CHANGED";
+    private static EmmageeService instance;
     /**
      * The constant bw.
      */
@@ -101,7 +105,6 @@ public class EmmageeService extends Service {
     private TextView txtTotalMem;
     private TextView txtUnusedMem;
     private TextView txtTraffic;
-    private Button btnStop;
     private Button btnWifi;
     private int delaytime;
     private DecimalFormat fomart;
@@ -124,7 +127,6 @@ public class EmmageeService extends Service {
     private String temperature;
     private String voltage;
     private BatteryInfo batteryInfo;
-    private FpsInfo fpsInfo;
     private BatteryInfoBroadcastReceiver batteryBroadcast = null;
     private int getStartTimeCount = 0;
     private boolean isGetStartTime = true;
@@ -150,13 +152,17 @@ public class EmmageeService extends Service {
         }
     };
 
+    public static EmmageeService getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         Log.i(LOG_TAG, "service onCreate");
         super.onCreate();
+        instance = this;
         isServiceStop = false;
         isStop = false;
-        fpsInfo = new FpsInfo();
         memoryInfo = new MemoryInfo();
         contextHelper = new ContextHelper();
         fomart = new DecimalFormat();
@@ -164,7 +170,7 @@ public class EmmageeService extends Service {
         fomart.setGroupingUsed(false);
         fomart.setMaximumFractionDigits(2);
         fomart.setMinimumFractionDigits(0);
-        des = new EncryptData("emmagee");
+        des = new EncryptData();
         batteryInfo = new BatteryInfo();
         statusBarHeight = getStatusBarHeight();
         batteryBroadcast = new BatteryInfoBroadcastReceiver();
@@ -212,7 +218,7 @@ public class EmmageeService extends Service {
             txtUnusedMem.setTextColor(android.graphics.Color.RED);
             txtTotalMem.setTextColor(android.graphics.Color.RED);
             txtTraffic.setTextColor(android.graphics.Color.RED);
-            btnStop = (Button) viFloatingWindow.findViewById(R.id.stop);
+            Button btnStop = (Button) viFloatingWindow.findViewById(R.id.stop);
             btnStop.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -471,7 +477,7 @@ public class EmmageeService extends Service {
         }
         ArrayList<String> processInfo = cpuInfo.getCpuRatioInfo(totalBatt,
                 currentBatt, temperature, voltage,
-                String.valueOf(fpsInfo.fps()), isRoot);
+                String.valueOf(FpsInfo.fps()), isRoot);
         if (isFloating) {
             String processCpuRatio = "0.00";
             String totalCpuRatio = "0.00";
@@ -587,9 +593,7 @@ public class EmmageeService extends Service {
         unregisterReceiver(batteryBroadcast);
         boolean isSendSuccessfully = false;
         try {
-            isSendSuccessfully = MailSender.sendTextMail(sender,
-                    des.decrypt(password), smtp,
-                    "Emmagee Performance Test Report", "see attachment",
+            isSendSuccessfully = MailSender.sendTextMail(sender, des.decrypt(password), smtp, "Emmagee Performance Test Report", "see attachment",
                     resultFilePath, receivers);
         } catch (Exception e) {
             isSendSuccessfully = false;
@@ -658,27 +662,9 @@ public class EmmageeService extends Service {
         return null;
     }
 
-    /**
-     * 电池信息监控监听器
-     *
-     * @author andrewleo
-     */
-    public class BatteryInfoBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            if (Intent.ACTION_BATTERY_CHANGED.equals(intent.getAction())) {
-                int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-                int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-                totalBatt = String.valueOf(level * 100 / scale);
-                voltage = String.valueOf(intent.getIntExtra(
-                        BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
-                temperature = String.valueOf(intent.getIntExtra(
-                        BatteryManager.EXTRA_TEMPERATURE, -1) * 1.0 / 10);
-            }
-
-        }
-
+    public void updateBatteryInfo(String battery,String volt,String temp){
+        totalBatt = battery;
+        voltage = volt;
+        temperature = temp;
     }
 }

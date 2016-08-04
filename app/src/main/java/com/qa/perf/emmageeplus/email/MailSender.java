@@ -1,4 +1,4 @@
-package com.qa.perf.emmageeplus.utils;
+package com.qa.perf.emmageeplus.email;
 
 import javax.activation.*;
 import javax.mail.*;
@@ -26,17 +26,17 @@ public class MailSender {
      * 待发送的邮件的信息
      *
      * @param sender          the sender
-     * @param encryptPassword the encrypt password
+     * @param decryptPassword the decrypt password
      * @param smtp            the smtp
      * @param subject         the subject
      * @param content         the content
      * @param file            the file
-     * @param maillists       the maillists
+     * @param mailList       the mailList
      * @return the boolean
      */
-    public static boolean sendTextMail(String sender, String encryptPassword, String smtp, String subject, String content, String file,
-                                       String[] maillists) {
-        if (maillists == null || maillists.length == 0 || ("".equals(maillists[0].trim()))) {
+    public static boolean sendTextMail(String sender, String decryptPassword, String smtp, String subject, String content, String file,
+                                       String[] mailList) {
+        if (mailList == null || mailList.length == 0 || ("".equals(mailList[0].trim()))) {
             return false;
         } else {
             // Get system properties
@@ -50,10 +50,8 @@ public class MailSender {
 
             // 判断是否需要身份认证
             CustomizedAuthenticator authenticator = null;
-            if (true) {
-                // 如果需要身份认证，则创建一个密码验证器
-                authenticator = new CustomizedAuthenticator(sender, encryptPassword);
-            }
+            // 如果需要身份认证，则创建一个密码验证器
+            authenticator = new CustomizedAuthenticator(sender, decryptPassword);
             // 根据邮件会话属性和密码验证器构造一个发送邮件的session
             Session sendMailSession = Session.getInstance(props, authenticator);
             try {
@@ -64,9 +62,9 @@ public class MailSender {
                 // 设置邮件消息的发送者
                 mailMessage.setFrom(from);
                 // 创建邮件的接收者地址，并设置到邮件消息中
-                for (int i = 0; i < maillists.length; i++) {
+                for (String aMailList : mailList) {
                     // Message.RecipientType.TO属性表示接收者的类型为TO
-                    mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(maillists[i]));
+                    mailMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(aMailList));
                 }
 
                 // 设置邮件消息的主题
@@ -79,14 +77,15 @@ public class MailSender {
                 bodyPart.setText(content);
                 multipart.addBodyPart(bodyPart);
 
-                File attach = new File(file);
-                if (attach.exists()) {
-                    MimeBodyPart attachPart = new MimeBodyPart();
-                    DataSource source = new FileDataSource(attach);
-                    attachPart.setDataHandler(new DataHandler(source));
-                    attachPart.setFileName(attach.getName());
-
-                    multipart.addBodyPart(attachPart);
+                if(file != null) {
+                    File attach = new File(file);
+                    if (attach.exists()) {
+                        MimeBodyPart attachPart = new MimeBodyPart();
+                        DataSource source = new FileDataSource(attach);
+                        attachPart.setDataHandler(new DataHandler(source));
+                        attachPart.setFileName(attach.getName());
+                        multipart.addBodyPart(attachPart);
+                    }
                 }
                 mailMessage.setContent(multipart);
                 MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();

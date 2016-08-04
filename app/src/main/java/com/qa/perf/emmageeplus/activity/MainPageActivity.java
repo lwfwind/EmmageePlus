@@ -30,6 +30,7 @@ import android.view.Window;
 import android.widget.*;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.adapter.ListViewAdapter;
+import com.qa.perf.emmageeplus.receiver.ServiceStatusReceiver;
 import com.qa.perf.emmageeplus.service.EmmageeService;
 import com.qa.perf.emmageeplus.utils.ContextHelper;
 
@@ -45,14 +46,14 @@ public class MainPageActivity extends Activity {
     private static final String LOG_TAG = "EmmageePlus-" + MainPageActivity.class.getSimpleName();
 
     private static final int TIMEOUT = 20000;
-
+    private static MainPageActivity instance;
     private ContextHelper contextHelper;
     private Intent monitorService;
     private ListView processListView;
     private Button btnTest;
     private int pid, uid;
     private boolean isServiceStop = false;
-    private UpdateReceiver receiver;
+    private ServiceStatusReceiver receiver;
 
     private TextView nbTitle;
     private ImageView ivGoBack;
@@ -60,13 +61,17 @@ public class MainPageActivity extends Activity {
     private LinearLayout layBtnSet;
     private Long mExitTime = (long) 0;
 
+    public static MainPageActivity getInstance(){
+        return instance;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "MainActivity::onCreate");
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.mainpage);
-
+        instance = this;
         initTitleLayout();
         contextHelper = new ContextHelper();
         btnTest.setOnClickListener(new OnClickListener() {
@@ -133,7 +138,7 @@ public class MainPageActivity extends Activity {
                 goToSettingsActivity();
             }
         });
-        receiver = new UpdateReceiver();
+        receiver = new ServiceStatusReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(EmmageeService.SERVICE_ACTION);
         registerReceiver(receiver, filter);
@@ -216,19 +221,8 @@ public class MainPageActivity extends Activity {
         unregisterReceiver(receiver);
     }
 
-    /**
-     * customized BroadcastReceiver
-     *
-     * @author andrewleo
-     */
-    public class UpdateReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            isServiceStop = intent.getExtras().getBoolean("isServiceStop");
-            if (isServiceStop) {
-                btnTest.setText(getString(R.string.start_test));
-            }
-        }
+    public void updateBtnTestStatus(){
+        btnTest.setText(getString(R.string.start_test));
     }
+
 }

@@ -31,7 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.qa.perf.emmageeplus.R;
-import com.qa.perf.emmageeplus.utils.EncryptData;
+import com.qa.perf.emmageeplus.email.EncryptData;
 import com.qa.perf.emmageeplus.utils.Settings;
 
 import java.util.regex.Matcher;
@@ -55,7 +55,6 @@ public class MailSettingsActivity extends Activity {
     private String prePassword, curPassword;
     private String recipients, smtp;
     private String[] receivers;
-    private TextView title;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,13 +63,13 @@ public class MailSettingsActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.mail_settings);
 
-        final EncryptData des = new EncryptData("emmagee");
+        final EncryptData des = new EncryptData();
 
         edtSender = (EditText) findViewById(R.id.sender);
         edtPassword = (EditText) findViewById(R.id.password);
         edtRecipients = (EditText) findViewById(R.id.recipients);
         edtSmtp = (EditText) findViewById(R.id.smtp);
-        title = (TextView) findViewById(R.id.nb_title);
+        TextView title = (TextView) findViewById(R.id.nb_title);
         LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
         LinearLayout layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
 
@@ -98,16 +97,16 @@ public class MailSettingsActivity extends Activity {
             public void onClick(View v) {
                 sender = edtSender.getText().toString().trim();
                 if (!BLANK_STRING.equals(sender) && !checkMailFormat(sender)) {
-                    Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast) + getString(R.string.format_incorrect_format),
+                    Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast)  + "[" + sender + "]" + getString(R.string.format_incorrect_format),
                             Toast.LENGTH_LONG).show();
                     return;
                 }
                 recipients = edtRecipients.getText().toString().trim();
                 receivers = recipients.split("\\s+");
-                for (int i = 0; i < receivers.length; i++) {
-                    if (!BLANK_STRING.equals(receivers[i]) && !checkMailFormat(receivers[i])) {
+                for (String receiver : receivers) {
+                    if (!BLANK_STRING.equals(receiver) && !checkMailFormat(receiver)) {
                         Toast.makeText(MailSettingsActivity.this,
-                                getString(R.string.receiver_mail_toast) + "[" + receivers[i] + "]" + getString(R.string.format_incorrect_format),
+                                getString(R.string.receiver_mail_toast) + "[" + receiver + "]" + getString(R.string.format_incorrect_format),
                                 Toast.LENGTH_LONG).show();
                         return;
                     }
@@ -129,7 +128,7 @@ public class MailSettingsActivity extends Activity {
                 }
                 editor.putString(Settings.KEY_RECIPIENTS, recipients);
                 editor.putString(Settings.KEY_SMTP, smtp);
-                editor.commit();
+                editor.apply();
                 Toast.makeText(MailSettingsActivity.this, getString(R.string.save_success_toast), Toast.LENGTH_LONG).show();
                 Intent intent = new Intent();
                 setResult(Activity.RESULT_FIRST_USER, intent);
@@ -151,10 +150,6 @@ public class MailSettingsActivity extends Activity {
     /**
      * check if mail configurations are available
      *
-     * @param sender
-     * @param recipients
-     * @param smtp
-     * @param curPassword
      * @return true: valid configurations
      */
     private int checkMailConfig(String sender, String recipients, String smtp, String curPassword) {
@@ -172,7 +167,7 @@ public class MailSettingsActivity extends Activity {
      * @return true: valid email address
      */
     private boolean checkMailFormat(String mail) {
-        String strPattern = "^[a-zA-Z0-9][\\w\\.-]*[a-zA-Z0-9]@[a-zA-Z0-9][\\w\\.-]*" + "[a-zA-Z0-9]\\.[a-zA-Z][a-zA-Z\\.]*[a-zA-Z]$";
+        String strPattern = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
         Pattern p = Pattern.compile(strPattern);
         Matcher m = p.matcher(mail);
         return m.matches();

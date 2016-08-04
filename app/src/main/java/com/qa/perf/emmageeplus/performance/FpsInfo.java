@@ -43,7 +43,7 @@ public class FpsInfo {
      *
      * @return frame value
      */
-    public static final int getFrameNum() {
+    public static int getFrameNum() {
         try {
             if (process == null) {
                 process = Runtime.getRuntime().exec("su");

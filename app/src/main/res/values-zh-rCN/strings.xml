@@ -16,7 +16,7 @@
     <string name="floating_window">显示浮窗</string>
     <string name="save">保存</string>
 
-    <string name="calculating">计算中...</string>
+    <string name="calculating">计算中…</string>
     <string name="open_wifi">开启WIFI</string>
     <string name="close_wifi">关闭WIFI</string>
     <string name="process_free_mem">应用/剩余内存:</string>
@@ -39,7 +39,7 @@
     <string name="traffic">流量(KB)</string>
     <string name="battery">电量(%)</string>
     <string name="current">电流(mA)</string>
-    <string name="temperature">温度(C)</string>
+    <string name="temperature">温度©</string>
     <string name="voltage">电压(V)</string>
     <string name="fps">帧率</string>
     <string name="stat_error">统计出错</string>
