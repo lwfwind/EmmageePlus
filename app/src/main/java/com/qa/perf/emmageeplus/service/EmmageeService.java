@@ -19,18 +19,25 @@ package com.qa.perf.emmageeplus.service;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.*;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiManager;
-import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.*;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,14 +48,24 @@ import com.qa.perf.emmageeplus.activity.MainPageActivity;
 import com.qa.perf.emmageeplus.bean.Process;
 import com.qa.perf.emmageeplus.email.EncryptData;
 import com.qa.perf.emmageeplus.email.MailSender;
-import com.qa.perf.emmageeplus.performance.CpuInfo;
 import com.qa.perf.emmageeplus.performance.BatteryInfo;
+import com.qa.perf.emmageeplus.performance.CpuInfo;
 import com.qa.perf.emmageeplus.performance.FpsInfo;
 import com.qa.perf.emmageeplus.performance.MemoryInfo;
 import com.qa.perf.emmageeplus.receiver.BatteryInfoBroadcastReceiver;
-import com.qa.perf.emmageeplus.utils.*;
+import com.qa.perf.emmageeplus.utils.Constants;
+import com.qa.perf.emmageeplus.utils.ContextHelper;
+import com.qa.perf.emmageeplus.utils.Settings;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -74,7 +91,6 @@ public class EmmageeService extends Service {
     private static final int MAX_START_TIME_COUNT = 5;
     private static final String START_TIME = "#startTime";
     private static final String BATTERY_CHANGED = "android.intent.action.BATTERY_CHANGED";
-    private static EmmageeService instance;
     /**
      * The constant bw.
      */
@@ -95,6 +111,7 @@ public class EmmageeService extends Service {
      * The constant isStop.
      */
     public static boolean isStop = false;
+    private static EmmageeService instance;
     private WindowManager windowManager = null;
     private WindowManager.LayoutParams wmParams = null;
     private View viFloatingWindow;
@@ -238,7 +255,6 @@ public class EmmageeService extends Service {
 
     /**
      * read configuration file.
-     *
      */
     private void readSettingInfo() {
         SharedPreferences preferences = Settings
@@ -344,7 +360,7 @@ public class EmmageeService extends Service {
      * create a floating window to show real-time data.
      */
     private void createFloatingWindow() {
-        getSharedPreferences("float_flag",Activity.MODE_PRIVATE).edit().putInt("float", 1).apply();
+        getSharedPreferences("float_flag", Activity.MODE_PRIVATE).edit().putInt("float", 1).apply();
         windowManager = (WindowManager) getApplicationContext()
                 .getSystemService(Context.WINDOW_SERVICE);
         wmParams = ((MyApplication) getApplication()).getMywmParams();
@@ -591,24 +607,34 @@ public class EmmageeService extends Service {
         }
         isStop = true;
         unregisterReceiver(batteryBroadcast);
-        boolean isSendSuccessfully = false;
-        try {
-            isSendSuccessfully = MailSender.sendTextMail(sender, des.decrypt(password), smtp, "Emmagee Performance Test Report", "see attachment",
-                    resultFilePath, receivers);
-        } catch (Exception e) {
-            isSendSuccessfully = false;
-        }
-        if (isSendSuccessfully) {
-            Toast.makeText(this,
-                    getString(R.string.send_success_toast) + recipients,
-                    Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(
-                    this,
-                    getString(R.string.send_fail_toast)
-                            + EmmageeService.resultFilePath, Toast.LENGTH_LONG)
-                    .show();
-        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean isSendSuccessfully = false;
+                try {
+                    isSendSuccessfully = MailSender.sendTextMail(sender, des.decrypt(password), smtp, "Emmagee Performance Test Report", "see attachment",
+                            resultFilePath, receivers);
+                } catch (Exception e) {
+                    Log.w(LOG_TAG, "sendTextMail: ", e);
+                    isSendSuccessfully = false;
+                }
+                Looper.prepare();
+                if (isSendSuccessfully) {
+                    Toast.makeText(EmmageeService.this,
+                            getString(R.string.send_success_toast) + recipients,
+                            Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(
+                            EmmageeService.this,
+                            getString(R.string.send_fail_toast)
+                                    + EmmageeService.resultFilePath, Toast.LENGTH_LONG)
+                            .show();
+                }
+                Looper.loop();
+            }
+        }).start();
+
         super.onDestroy();
         stopForeground(true);
     }
@@ -616,7 +642,6 @@ public class EmmageeService extends Service {
     /**
      * Replaces all matches for replaceType within this replaceString in file on
      * the filePath
-     *
      */
     private void replaceFileString(String filePath, String replaceType,
                                    String replaceString) {
@@ -662,7 +687,7 @@ public class EmmageeService extends Service {
         return null;
     }
 
-    public void updateBatteryInfo(String battery,String volt,String temp){
+    public void updateBatteryInfo(String battery, String volt, String temp) {
         totalBatt = battery;
         voltage = volt;
         temperature = temp;
