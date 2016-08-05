@@ -21,7 +21,11 @@ import android.content.Context;
 import android.os.Debug;
 import android.util.Log;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * operate memory information

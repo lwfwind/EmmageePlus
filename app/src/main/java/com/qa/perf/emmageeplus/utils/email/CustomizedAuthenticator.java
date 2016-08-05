@@ -1,4 +1,4 @@
-package com.qa.perf.emmageeplus.email;
+package com.qa.perf.emmageeplus.utils.email;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;

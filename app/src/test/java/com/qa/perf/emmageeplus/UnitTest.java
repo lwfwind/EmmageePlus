@@ -1,6 +1,6 @@
 package com.qa.perf.emmageeplus;
 
-import com.qa.perf.emmageeplus.email.MailSender;
+import com.qa.perf.emmageeplus.utils.email.MailSender;
 
 import junit.framework.Assert;
 

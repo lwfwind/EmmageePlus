@@ -46,8 +46,6 @@ import com.qa.perf.emmageeplus.MyApplication;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.activity.MainPageActivity;
 import com.qa.perf.emmageeplus.bean.Process;
-import com.qa.perf.emmageeplus.email.EncryptData;
-import com.qa.perf.emmageeplus.email.MailSender;
 import com.qa.perf.emmageeplus.performance.BatteryInfo;
 import com.qa.perf.emmageeplus.performance.CpuInfo;
 import com.qa.perf.emmageeplus.performance.FpsInfo;
@@ -56,6 +54,8 @@ import com.qa.perf.emmageeplus.receiver.BatteryInfoBroadcastReceiver;
 import com.qa.perf.emmageeplus.utils.Constants;
 import com.qa.perf.emmageeplus.utils.ContextHelper;
 import com.qa.perf.emmageeplus.utils.Settings;
+import com.qa.perf.emmageeplus.utils.email.EncryptData;
+import com.qa.perf.emmageeplus.utils.email.MailSender;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

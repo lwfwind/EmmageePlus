@@ -16,7 +16,6 @@
  */
 package com.qa.perf.emmageeplus.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,8 +23,16 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.*;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.qa.perf.emmageeplus.BaseActivity;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.utils.Settings;
 
@@ -36,7 +43,7 @@ import java.io.DataOutputStream;
  *
  * @author andrewleo
  */
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends BaseActivity {
 
     private static final String LOG_TAG = "Emmagee-" + SettingsActivity.class.getSimpleName();
 

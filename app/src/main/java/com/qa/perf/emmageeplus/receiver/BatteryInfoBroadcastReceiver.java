@@ -21,7 +21,7 @@ public class BatteryInfoBroadcastReceiver extends BroadcastReceiver {
                     BatteryManager.EXTRA_VOLTAGE, -1) * 1.0 / 1000);
             String temperature = String.valueOf(intent.getIntExtra(
                     BatteryManager.EXTRA_TEMPERATURE, -1) * 1.0 / 10);
-            EmmageeService.getInstance().updateBatteryInfo(totalBatt,voltage,temperature);
+            EmmageeService.getInstance().updateBatteryInfo(totalBatt, voltage, temperature);
         }
     }
 }

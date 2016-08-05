@@ -3,7 +3,11 @@ package com.qa.perf.emmageeplus.performance;
 import android.os.Build;
 import android.util.Log;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.util.Locale;
 
 /**

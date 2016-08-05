@@ -16,7 +16,6 @@
  */
 package com.qa.perf.emmageeplus.activity;
 
-import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -28,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.qa.perf.emmageeplus.BaseActivity;
 import com.qa.perf.emmageeplus.R;
 
 /**
@@ -35,7 +35,7 @@ import com.qa.perf.emmageeplus.R;
  *
  * @author andrewleo
  */
-public class AboutActivity extends Activity {
+public class AboutActivity extends BaseActivity {
 
     private static final String LOG_TAG = "Emmagee-"
             + AboutActivity.class.getSimpleName();

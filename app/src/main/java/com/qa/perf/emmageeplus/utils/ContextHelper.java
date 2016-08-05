@@ -25,13 +25,14 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.util.Log;
 
+import com.qa.perf.emmageeplus.bean.Process;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.qa.perf.emmageeplus.bean.Process;
 
 /**
  * get information of processes

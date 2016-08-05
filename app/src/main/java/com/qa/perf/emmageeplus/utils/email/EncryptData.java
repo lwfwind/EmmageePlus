@@ -1,9 +1,8 @@
-package com.qa.perf.emmageeplus.email;
+package com.qa.perf.emmageeplus.utils.email;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import java.security.Key;
+
+import javax.crypto.Cipher;
 
 /**
  * 提供加密算法，可以对输入的字符串进行加密、解密操作
@@ -32,7 +31,7 @@ public class EncryptData {
      * @param strKey 指定的密钥
      * @throws Exception
      */
-    public EncryptData(String strKey){
+    public EncryptData(String strKey) {
         try {
             Key key = getKey(strKey.getBytes());
             encryptCipher = Cipher.getInstance("DES");

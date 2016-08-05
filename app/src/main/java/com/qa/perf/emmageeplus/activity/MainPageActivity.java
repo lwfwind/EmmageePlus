@@ -17,8 +17,6 @@
 package com.qa.perf.emmageeplus.activity;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -27,7 +25,16 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.qa.perf.emmageeplus.BaseActivity;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.adapter.ListViewAdapter;
 import com.qa.perf.emmageeplus.receiver.ServiceStatusReceiver;
@@ -41,7 +48,7 @@ import java.io.IOException;
  *
  * @author andrewleo
  */
-public class MainPageActivity extends Activity {
+public class MainPageActivity extends BaseActivity {
 
     private static final String LOG_TAG = "EmmageePlus-" + MainPageActivity.class.getSimpleName();
 
@@ -61,7 +68,7 @@ public class MainPageActivity extends Activity {
     private LinearLayout layBtnSet;
     private Long mExitTime = (long) 0;
 
-    public static MainPageActivity getInstance(){
+    public static MainPageActivity getInstance() {
         return instance;
     }
 
@@ -221,7 +228,7 @@ public class MainPageActivity extends Activity {
         unregisterReceiver(receiver);
     }
 
-    public void updateBtnTestStatus(){
+    public void updateBtnTestStatus() {
         btnTest.setText(getString(R.string.start_test));
     }
 

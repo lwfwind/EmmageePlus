@@ -14,7 +14,7 @@ public class ServiceStatusReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if(intent.getAction().equals(EmmageeService.SERVICE_ACTION)) {
+        if (intent.getAction().equals(EmmageeService.SERVICE_ACTION)) {
             boolean isServiceStop = intent.getExtras().getBoolean("isServiceStop");
             if (isServiceStop) {
                 MainPageActivity.getInstance().updateBtnTestStatus();

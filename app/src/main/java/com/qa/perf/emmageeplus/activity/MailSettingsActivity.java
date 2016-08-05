@@ -30,9 +30,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.qa.perf.emmageeplus.BaseActivity;
 import com.qa.perf.emmageeplus.R;
-import com.qa.perf.emmageeplus.email.EncryptData;
 import com.qa.perf.emmageeplus.utils.Settings;
+import com.qa.perf.emmageeplus.utils.email.EncryptData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +44,7 @@ import java.util.regex.Pattern;
  *
  * @author andrewleo
  */
-public class MailSettingsActivity extends Activity {
+public class MailSettingsActivity extends BaseActivity {
 
     private static final String LOG_TAG = "Emmagee-" + MailSettingsActivity.class.getSimpleName();
     private static final String BLANK_STRING = "";
@@ -97,7 +99,7 @@ public class MailSettingsActivity extends Activity {
             public void onClick(View v) {
                 sender = edtSender.getText().toString().trim();
                 if (!BLANK_STRING.equals(sender) && !checkMailFormat(sender)) {
-                    Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast)  + "[" + sender + "]" + getString(R.string.format_incorrect_format),
+                    Toast.makeText(MailSettingsActivity.this, getString(R.string.sender_mail_toast) + "[" + sender + "]" + getString(R.string.format_incorrect_format),
                             Toast.LENGTH_LONG).show();
                     return;
                 }

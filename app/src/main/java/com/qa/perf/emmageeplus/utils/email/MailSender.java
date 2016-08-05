@@ -1,4 +1,4 @@
-package com.qa.perf.emmageeplus.email;
+package com.qa.perf.emmageeplus.utils.email;
 
 
 import java.io.File;
@@ -34,7 +34,7 @@ public class MailSender {
 
     /**
      * 以文本格式发送邮件
-     * <p/>
+     * <p>
      * 待发送的邮件的信息
      *
      * @param sender          the sender
