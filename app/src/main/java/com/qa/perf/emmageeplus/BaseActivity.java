@@ -3,12 +3,11 @@ package com.qa.perf.emmageeplus;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends Activity {
     private static final String TAG = BaseActivity.class.getSimpleName();
     public static Activity curActivity;
     protected boolean destroyed;
