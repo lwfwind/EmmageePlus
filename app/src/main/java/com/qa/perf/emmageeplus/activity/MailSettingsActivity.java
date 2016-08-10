@@ -96,9 +96,6 @@ public class MailSettingsActivity extends BaseActivity {
         edtPassword.setText(prePassword);
         edtSmtp.setText(smtp);
 
-        LayoutInflater inflater = getLayoutInflater();
-
-
         layGoBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -112,14 +109,6 @@ public class MailSettingsActivity extends BaseActivity {
                 prePassword = edtPassword.getText().toString().trim();
                 smtp = edtSmtp.getText().toString().trim();
                 recipients = edtRecipients.getText().toString().trim();
-//                sender="EmmageePlus@126.com";
-//                prePassword="Lwfwind789";
-//                smtp="smtp.126.com";
-//                recipients="wind@abc360.com";
-                System.out.println("---------------------------------------------------------------" + sender);
-                System.out.println("---------------------------------------------------------------" + prePassword);
-                System.out.println("---------------------------------------------------------------" + smtp);
-                System.out.println("---------------------------------------------------------------" + recipients);
                 receivers = recipients.split(" ");
                 for (String receiver : receivers) {
                     System.out.println(receiver);
@@ -148,7 +137,6 @@ public class MailSettingsActivity extends BaseActivity {
                         Looper.loop();
                     }
                 }.start();
-                System.out.println("1111111111111111111");
             }
         });
         layBtnSet.setOnClickListener(new OnClickListener() {
@@ -205,10 +193,12 @@ public class MailSettingsActivity extends BaseActivity {
             return getString(R.string.sender_mail_toast) + "[" + sender + "]" + getString(R.string.format_incorrect_format);
         }
         receivers = recipients.split(" ");
-        for (String mail : receivers) {
-            if (!BLANK_STRING.equals(receivers) && !checkMailFormat(mail)) {
-                System.out.println("判断收件人格式");
-                return getString(R.string.receiver_mail_toast) + "[" + mail + "]" + getString(R.string.format_incorrect_format);
+        if (receivers.length > 0) {
+            for (String mail : receivers) {
+                if (!checkMailFormat(mail)) {
+                    System.out.println("判断收件人格式");
+                    return getString(R.string.receiver_mail_toast) + "[" + mail + "]" + getString(R.string.format_incorrect_format);
+                }
             }
         }
         return "账号密码错误或SMTP配置错误";
