@@ -17,15 +17,21 @@
 package com.qa.perf.emmageeplus.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.v7.widget.ButtonBarLayout;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,6 +41,7 @@ import com.qa.perf.emmageeplus.BaseActivity;
 import com.qa.perf.emmageeplus.R;
 import com.qa.perf.emmageeplus.utils.Settings;
 import com.qa.perf.emmageeplus.utils.email.EncryptData;
+import com.qa.perf.emmageeplus.utils.email.MailSender;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -71,13 +78,14 @@ public class MailSettingsActivity extends BaseActivity {
         edtPassword = (EditText) findViewById(R.id.password);
         edtRecipients = (EditText) findViewById(R.id.recipients);
         edtSmtp = (EditText) findViewById(R.id.smtp);
+        Button checkEmail = (Button) findViewById(R.id.checkEmail);
         TextView title = (TextView) findViewById(R.id.nb_title);
         LinearLayout layGoBack = (LinearLayout) findViewById(R.id.lay_go_back);
         LinearLayout layBtnSet = (LinearLayout) findViewById(R.id.lay_btn_set);
 
         title.setText(R.string.mail_settings);
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         sender = preferences.getString(Settings.KEY_SENDER, BLANK_STRING);
         prePassword = preferences.getString(Settings.KEY_PASSWORD, BLANK_STRING);
         recipients = preferences.getString(Settings.KEY_RECIPIENTS, BLANK_STRING);
@@ -88,10 +96,59 @@ public class MailSettingsActivity extends BaseActivity {
         edtPassword.setText(prePassword);
         edtSmtp.setText(smtp);
 
+        LayoutInflater inflater = getLayoutInflater();
+
+
         layGoBack.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 MailSettingsActivity.this.finish();
+            }
+        });
+        checkEmail.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sender = edtSender.getText().toString().trim();
+                prePassword = edtPassword.getText().toString().trim();
+                smtp = edtSmtp.getText().toString().trim();
+                recipients = edtRecipients.getText().toString().trim();
+//                sender="EmmageePlus@126.com";
+//                prePassword="Lwfwind789";
+//                smtp="smtp.126.com";
+//                recipients="wind@abc360.com";
+                System.out.println("---------------------------------------------------------------" + sender);
+                System.out.println("---------------------------------------------------------------" + prePassword);
+                System.out.println("---------------------------------------------------------------" + smtp);
+                System.out.println("---------------------------------------------------------------" + recipients);
+                receivers = recipients.split(" ");
+                for (String receiver : receivers) {
+                    System.out.println(receiver);
+                }
+                new Thread(){
+                    @Override
+                    public void run() {
+                        // 取得自定义View
+                        boolean emailTrue;
+                        try {
+                            emailTrue = MailSender.sendTextMail(sender, prePassword, smtp, "text_mail", "It's just a test", null, receivers);
+                        } catch (Exception e) {
+                            emailTrue = false;
+                        }
+                        Looper.prepare();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MailSettingsActivity.this,AlertDialog.THEME_DEVICE_DEFAULT_LIGHT);
+                        builder.setTitle("核对结果");
+                        if (!emailTrue) {
+                            String error=getError(sender,prePassword,smtp,recipients);
+                            builder.setMessage("发送邮件错误，请核对您的信息"+"\n"+"错误详情:"+"\n"+error);
+                        } else {
+                            builder.setMessage("邮箱正确,验证通过");
+                        }
+                        builder.setPositiveButton("确认", null);
+                        builder.show();
+                        Looper.loop();
+                    }
+                }.start();
+                System.out.println("1111111111111111111");
             }
         });
         layBtnSet.setOnClickListener(new OnClickListener() {
@@ -115,7 +172,7 @@ public class MailSettingsActivity extends BaseActivity {
                 }
                 curPassword = edtPassword.getText().toString().trim();
                 smtp = edtSmtp.getText().toString().trim();
-                if (checkMailConfig(sender, recipients, smtp, curPassword) == -1) {
+                if (checkMailConfig(sender, recipients, smtp, curPassword) == 1) {
                     Toast.makeText(MailSettingsActivity.this, getString(R.string.info_incomplete_toast), Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -138,7 +195,25 @@ public class MailSettingsActivity extends BaseActivity {
             }
         });
     }
+    public String getError(String sender,String prePassword,String smtp,String recipients){
+        if (checkMailConfig(sender, prePassword, smtp, recipients) == 1) {
+            System.out.println("是否全为空");
+            return getString(R.string.info_incomplete_toast);
+        }
+        if (!BLANK_STRING.equals(sender) && !checkMailFormat(sender)) {
+            System.out.println("判断发信人格式");
+            return getString(R.string.sender_mail_toast) + "[" + sender + "]" + getString(R.string.format_incorrect_format);
+        }
+        receivers = recipients.split(" ");
+        for (String mail : receivers) {
+            if (!BLANK_STRING.equals(receivers) && !checkMailFormat(mail)) {
+                System.out.println("判断收件人格式");
+                return getString(R.string.receiver_mail_toast) + "[" + mail + "]" + getString(R.string.format_incorrect_format);
+            }
+        }
+        return "账号密码错误或SMTP配置错误";
 
+    }
     @Override
     public void finish() {
         super.finish();
@@ -155,12 +230,16 @@ public class MailSettingsActivity extends BaseActivity {
      * @return true: valid configurations
      */
     private int checkMailConfig(String sender, String recipients, String smtp, String curPassword) {
-        if (!BLANK_STRING.equals(curPassword) && !BLANK_STRING.equals(sender) && !BLANK_STRING.equals(recipients) && !BLANK_STRING.equals(smtp)) {
+//        if (!BLANK_STRING.equals(curPassword) && !BLANK_STRING.equals(sender) && !BLANK_STRING.equals(recipients) && !BLANK_STRING.equals(smtp)) {
+//            return 1;
+//        } else if (BLANK_STRING.equals(curPassword) && BLANK_STRING.equals(sender) && BLANK_STRING.equals(recipients) && BLANK_STRING.equals(smtp)) {
+//            return 0;
+//        } else
+//            return -1;
+        if (BLANK_STRING.equals(curPassword) || BLANK_STRING.equals(sender) || BLANK_STRING.equals(recipients) || BLANK_STRING.equals(smtp)){
             return 1;
-        } else if (BLANK_STRING.equals(curPassword) && BLANK_STRING.equals(sender) && BLANK_STRING.equals(recipients) && BLANK_STRING.equals(smtp)) {
-            return 0;
-        } else
-            return -1;
+        }
+        else{return 0;}
     }
 
     /**

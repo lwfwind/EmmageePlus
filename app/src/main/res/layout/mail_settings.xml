@@ -137,7 +137,22 @@
                     android:layout_marginTop="@dimen/edit_margin"
                     android:textSize="@dimen/text_size" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/layout_vertical_margin_small"
+                >
+                <Button
+                    android:id="@+id/checkEmail"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/checkEmail"
+                    android:textSize="@dimen/text_size"
+                    android:background="@drawable/test_button"
+                    android:textColor="@color/white" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>

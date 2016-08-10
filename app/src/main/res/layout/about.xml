@@ -105,19 +105,6 @@
                     android:layout_marginTop="@dimen/layout_vertical_margin"
                     android:layout_marginBottom="@dimen/layout_vertical_margin"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/about_team"
-                    android:textColor="@color/mix_gray"
-                    android:textSize="@dimen/text_size" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/about_project_address"
-                    android:textColor="@color/mix_gray"
-                    android:textSize="@dimen/text_size" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
